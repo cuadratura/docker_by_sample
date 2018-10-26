@@ -574,7 +574,13 @@ Construimos la imagen como primera versión: `docker build -t java-multi-stage-b
 
 Ejecutamos `docker images` para ver y comparar el tamaño de las imágenes resultantes, la generada más la inicial de maiven. 
 
-> Gracias al **Multi-stage-build** evitaremos añadir a la imagen a suma de capas que la haría más pesada, reduciendo su tamaño y refactorizandola.
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker images
+REPOSITORY               TAG                 IMAGE ID            CREATED             SIZE
+java-multi-stage-build   v1                  28e4136653f4        28 seconds ago      131MB
+```
+
+> Gracias al **Multi-stage-build** evitaremos añadir a la imagen a suma de capas que la haría más pesada, reduciendo su tamaño y refactorizandola ya que incluirá sólo las capas necesarias más los archivos generados resultantes.
 
 Ahora incluiremos el nuevo FROM en nuestro **Dockerfile** para incluir desde dónde queremos copiar nuestro **jar**
 
@@ -590,7 +596,25 @@ RUN cd /app && mvn package
 ++ CMD java -jar /opt/app.jar
 ```
 
-Si volvemos a generar la imagen esta vez como **v2**, `docker build -t java-multi-stage-build:v2 .`, y ejecutamos `docker images -f java-multi-stage-build` veremos que la actual imagen pesa menos que la versión 1. Esta imagen resultante se generará a partir del segundo FROM más el resultante de la generación de la primera parte del Dockerfile, obviando lo innecesario.
+Si volvemos a generar la imagen esta vez como **v2**, `docker build -t java-multi-stage-build:v2 .`, y ejecutamos `docker images` veremos que la actual imagen pesa menos que la versión 1. Esta imagen resultante se generará a partir del segundo FROM más el resultante de la generación de la primera parte del Dockerfile, obviando lo innecesario.
 
-`docker run -d --name java-multi-stage-build-v2 java-multi-stage-build:v2` `docker ps -a` el contenedor habrá muerto ya que nuestra aplicación java solo imprimirá en pantalla hello-world 
-`docker logs java-multi-stage-build-v2`
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker images
+REPOSITORY               TAG                 IMAGE ID            CREATED             SIZE
+java-multi-stage-build   v2                  1cbc38958306        3 seconds ago       103MB
+java-multi-stage-build   v1                  28e4136653f4        4 minutes ago       131MB
+```
+
+Finalmente ejecutaremos el comando `docker run -d --name java-multi-stage-build-v2 java-multi-stage-build:v2` para lanzar el contenedor y `docker ps -a` para ver el resultado (ya que el contenedor habrá muerto tras imprimir **hello-world**.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker run -d --name java-multi-stage-build-v2 java-multi-stage-build:v2
+1752b43105cbdbdae11dfce128d1623d4a0eeec51c91b9e092e1b832764e96d4
+
+demo@VirtualBox:~/Demo_Docker$ docker ps -a
+CONTAINER ID  IMAGE                       COMMAND                  CREATED        STATUS       PORTS       NAMES
+1752b43105cb  java-multi-stage-build:v2   "/bin/sh -c 'java -j…"   6 seconds ago  Exited (0) 5 secondsago java-multi-stage-build-v2
+
+demo@VirtualBox:~/Demo_Docker$ docker logs java-multi-stage-build-v2
+hello-world
+```
