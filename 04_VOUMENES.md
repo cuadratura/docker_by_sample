@@ -287,3 +287,136 @@ local               mysql-data
 > Para eliminarlo usaremos `docker volume rm mysql-data`.
 
 Una vez creado el volumen, `docker volume create mysql-data` podremos asociarlo a un contenedor tal que así `docker run -d --name db -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=12345678" -v mysql-data:/var/lib/mysql mysql:5.7`, siendo `mysql-data` el volumen creado anteriormente.
+
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+--------------------------------------------------------------------------
+
+### Dangling volumes
+
+--------------------------------------------------------------------------
+
+Al igual que con las imágenes pueden quedarse los volúmenes huefanos, esto ocurre cuando creamos un contenedor que usa un volumen anónimo, por ejemplo `docker run -d --name db -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=12345678" -v /var/lib/mysql mysql:5.7`. Y posteriormente los eliminamos sin la opción `v`, `docker rm -f db`, así se eliminará el contenedor pero el volumen no quedándo el mismo huerfano y ocupando espacio en nuestra máquina. 
+
+Esto puede dar lugar a un problema de consumo de recursos, **¿Cómo podemos eliminarlos?**. Para ello usaríamos `docker volume ls` para listarlos, y usar `docker volume ls -f dangling=true` para mostrar los **volúmenes Dangling** (sin referenciar con contenedores).
+
+Finalmente usaremos `docker volume ls -f dangling=true -q` para obtener sólo los **id** y `docker volume ls -f dangling=true -q | xargs docker volume rm` para eliminarlos.
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+--------------------------------------------------------------------------
+
+### Persisitiendo Data con Mongo
+
+--------------------------------------------------------------------------
+
+Usaremos el comando de descarga del repositorio de **Mongo** `docker pull mongo`.
+
+Para correr la imagen de mongo descargada usaremos el comando siguiente `docker run -d --name <container-name> -p <machine-port>:<container-port> -v <location-volumen-machine>:<location-volumen-container> <image-name>:<image-tag>`, `docker run -d --name mongo-data -p 27017:27017 -v /opt/mongo/:/data/db mongo`.
+
+Si buscamos en la documentación oficial de mongo veremos que guarda su contenido creado dentro de `/data/db`.
+
+> Nota: Previamente será necesario crear la carpeta `/opt/mongo/`que será dónde se guaradrá nuestro volumen.
+
+Podremos crear una base de datos con mongo dentro del contenedor para ver si verdaderamente se mantiene el contendio creado. Accedemos al contenedor `docker exec -ti mongo-data bash` y escribimos `mongo` dentro del contenedor para montar mongo. Y escribimos ne la terminal `use mydb` para seleccionar la tabla **mydb**, `db.movie.insert({"name":"tutorials point"})` y `show dbs` para ver las tablas creadas.
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+--------------------------------------------------------------------------
+
+### Persisitiendo Data con Jenkins
+
+--------------------------------------------------------------------------
+
+Usaremos el comando de descarga del repositorio de **Jenkins** `docker pull jenkins`.
+
+Para correr la imagen de **jenkins** descargada usaremos el comando siguiente `docker run -d --name <container-name> -p <machine-port>:<container-port> -v <location-volumen-machine>:<location-volumen-container> <image-name>:<image-tag>`, `docker run -d --name jenkins-data -p 8080:8080 -v /opt/jenkins/:/var/jenkins_home`.
+
+Si buscamos en la documentación oficial de mongo veremos que guarda su contenido creado dentro de `/var/jenkins_home`.
+
+> Nota: Previamente será necesario crear la carpeta `/opt/jenkins/`que será dónde se guaradrá nuestro volumen.
+
+Accedemos a [http://localhost:8080](http://localhost:8080), podemos crear algo de contenido y probar que verdaderamnete se guardó.
+
+> Nota: jenkins requiere que accedamos a su contenedor para visualizar el pass que nos permita loguearnos en la instalación. Para acceder a ver dicho contenido sin entrar dentro del contenedor podemos ejecutar la siguiente línea `docker exec <container-name> bash -c "<command-container>"`, en nuestro caso sería `docker exec jenkins-data bash -c "cat /var/jenkins_home/secrets/initialAdminPassword"`, y veremos el resultado del contenedor.
+
+Una vez creado el contenido, eliminamos el contenedor `docker rm -fv jenkins` y lo volvemos a crear referenciando la carpeta del volumen `docker run -d --name jenkins-data -p 8080:8080 -v /opt/jenkins/:/var/jenkins_home`. 
+
+Ahora si accedemos al proyecto, [http://localhost:8080](http://localhost:8080), veremos que no se perdió nada.
+
+--------------------------------------------------------------------------
+
+### Compartir Volúmenes entre varios contenedores
+
+--------------------------------------------------------------------------
+
+Generamos una carpeta llamada **/common/** dónde guardaremos el volumen común.
+
+Primeramente definimos nuestra imagen sigueinte dentro de **Dockerfile**
+
+_[Dockerfile](./Dockerfile)_
+```dockerfile
+FROM centos
+COPY start.sh /start
+RUN chmod +x /start.sh
+CMD /start.sh
+```
+
+y nuestro CMD que creará dentro de index.html cada diez segundos una línea con la hora de ese instante.
+
+_[start.sh](./start.sh)_
+```sh
+#!/bin/bash
+while true; do
+    echo "<p>$(date +%H:%M:%S)</p>" > /opt/index.html
+    sleep 10
+done
+```
+
+Una vez creado todo lo necesario para nuestra imagen la creamos con el comando `docker build -t test .`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker build -t test .
+Sending build context to Docker daemon  3.072kB
+Step 1/4 : FROM centos
+ ---> 75835a67d134
+// ...
+Successfully tagged test:latest
+```
+
+Ahora podemos lanzar el contenedor que guarde el volumen generado dentro de `/opt` en la carpeta de ubicación (`$PWD`) `/common`, usando el comando `docker run -v $PWD/common:/opt -d --name generator test`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker run -v $PWD/common:/opt -d --name generator test
+712baa13eb8fa9ba0756921a51ba956e815ecdb39c1b3f62bd02479de59b119e
+```
+
+Nos aseguramos que el contenedor está corriendo `docker ps`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$  docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS         NAMES
+712baa13eb8f        test                "/bin/sh -c /start.sh"   About a minute ago   Up About a minute         generator
+```
+
+Y vemos el archivo generado **index.html** usando `cat common/index.html`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ cat common/index.html
+<p>19:40:08</p>
+<p>19:40:18</p>
+<p>19:40:28</p>
+<p>19:40:38</p>
+<p>19:40:48</p>
+<p>19:40:58</p>
+<p>19:41:08</p>
+<p>19:41:18</p>
+```
+
+Ya podemos generar nuestra segundo contenedor `docker run -d --name nginx -v $PWD/common:/usr/share/nginx/html -p 80:80 nginx:alpine` que utilizará el mismo volumen para guardar sus datos.
+
+Si entrasemos en [http://localhost:80](http://localhost:80) veríamos en el navegador a index.html.
+
+> nuestro contenedor generador iría modificando index.html, y nginex lo serviría.
+
