@@ -540,9 +540,11 @@ Ejecutaremos el comando para construir nuestra nueva imagen `docker build --tag 
 
 --------------------------------------------------------------------------
 
-#### Multi Stage Build
+#### Multi Stage Build 
 
 El **Multi Stage Build** permite usar en un mismo **Dokerfile** usar varios FROM para crear imágenes diferentes por temas de dependencias entre las mismas.
+
+##### Ejemplo 1
 
 Por ejemplo, quiero crear un **jar** desde una imagen **maven** para copiar esa **jar** en una imagen **java**.
 
@@ -617,4 +619,37 @@ CONTAINER ID  IMAGE                       COMMAND                  CREATED      
 
 demo@VirtualBox:~/Demo_Docker$ docker logs java-multi-stage-build-v2
 hello-world
+```
+
+##### Ejemplo 2
+
+Construyamos nuestra imagen a partir del siguiente **Dockerfile**.
+
+_[Dockerfile](./Dockerfile)_
+```dockerfile
+FROM centos
+
+RUN fallocate -t 10M /opt/file1
+RUN fallocate -t 20M /opt/file2
+RUN fallocate -t 30M /opt/file3
+```
+
+> Nota: El comando de linux `fallocate -t <sizefile> <file-location>`(ejemplo `fallocate -t 10M /opt/file1`) permite generar archivos de un peso determinado.
+
+Al generar esta imagen con el comando `docker build --tag muilti-stage-fallocate:v1 .` veremos que se genera una imagen de un peso .
+
+Si repetimos la estrategia anterior, imaginando que la resultante de la compilación de esos tres archivos es uno nuevo de pero 20M, observaremos que la imagen resultante pasa a pesar x.
+
+_[Dockerfile](./Dockerfile)_
+```diff
+-- FROM centos
+++ FROM centos as test
+
+-- RUN fallocate -t 10M /opt/file1
+-- RUN fallocate -t 20M /opt/file2
+-- RUN fallocate -t 30M /opt/file3
+++ RUN fallocate -t 20M /opt/result
+
+++ FROM alpine
+++ COPY --from=test /opt/test2 /opt/myfile
 ```
