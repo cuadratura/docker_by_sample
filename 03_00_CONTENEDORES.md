@@ -719,6 +719,7 @@ Y ejecutamos la relectura de **systemctl** mediante el comando `systemctl daemon
 
 Si escribieramos un `docker images`aparecerá vacío al estar la nueva ubicación sin imágenes disponibles por encontrarse en la anterior ubicación.
 
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
 
 --------------------------------------------------------------------------
 
