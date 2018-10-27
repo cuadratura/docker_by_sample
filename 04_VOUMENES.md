@@ -345,6 +345,8 @@ Una vez creado el contenido, eliminamos el contenedor `docker rm -fv jenkins` y 
 
 Ahora si accedemos al proyecto, [http://localhost:8080](http://localhost:8080), veremos que no se perdió nada.
 
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
 --------------------------------------------------------------------------
 
 ### Compartir Volúmenes entre varios contenedores
@@ -420,3 +422,4 @@ Si entrasemos en [http://localhost:80](http://localhost:80) veríamos en el nave
 
 > nuestro contenedor generador iría modificando index.html, y nginex lo serviría.
 
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
