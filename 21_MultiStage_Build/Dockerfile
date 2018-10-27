@@ -1,10 +1,10 @@
-FROM centos
+# FROM centos
+FROM centos as test
 
-# FROM centos as test
+# RUN fallocate -l 10M /opt/file1
+# RUN fallocate -l 20M /opt/file2
+# RUN fallocate -l 30M /opt/file3
+RUN fallocate -l 20M /opt/result
 
-RUN fallocate -t 10M /opt/file1
-RUN fallocate -t 20M /opt/file2
-RUN fallocate -t 30M /opt/file3
-
-# FROM alpine
-# COPY --from=test /opt/test2 /opt/myfile
+FROM alpine
+COPY --from=test /opt/result /opt/myfile

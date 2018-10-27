@@ -629,27 +629,51 @@ _[Dockerfile](./Dockerfile)_
 ```dockerfile
 FROM centos
 
-RUN fallocate -t 10M /opt/file1
-RUN fallocate -t 20M /opt/file2
-RUN fallocate -t 30M /opt/file3
+RUN fallocate -l 10M /opt/file1
+RUN fallocate -l 20M /opt/file2
+RUN fallocate -l 30M /opt/file3
 ```
 
-> Nota: El comando de linux `fallocate -t <sizefile> <file-location>`(ejemplo `fallocate -t 10M /opt/file1`) permite generar archivos de un peso determinado.
+> Nota: El comando de linux `fallocate -l <sizefile> <file-location>`(ejemplo `fallocate -l 10M /opt/file1`) permite generar archivos de un peso determinado.
 
-Al generar esta imagen con el comando `docker build --tag muilti-stage-fallocate:v1 .` veremos que se genera una imagen de un peso .
+Al generar esta imagen con el comando `docker build --tag muilti-stage-fallocate:v1 .` veremos que se genera una imagen de un peso de **263MB**.
 
-Si repetimos la estrategia anterior, imaginando que la resultante de la compilación de esos tres archivos es uno nuevo de pero 20M, observaremos que la imagen resultante pasa a pesar x.
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker build --tag muilti-stage-fallocate:v1 .
+// ...
+demo@VirtualBox:~/Demo_Docker$ docker images
+REPOSITORY              TAG   IMAGE ID       CREATED          SIZE
+muilti-stage-fallocate  v1    6987032f7985   15 seconds ago   263MB
+```
+
+Si repetimos la estrategia anterior, imaginando que la resultante de la compilación de esos tres archivos es uno nuevo de pero 20M, observaremos que la imagen resultante pasa a pesar sólo **25.4MB**.
 
 _[Dockerfile](./Dockerfile)_
 ```diff
 -- FROM centos
 ++ FROM centos as test
 
--- RUN fallocate -t 10M /opt/file1
--- RUN fallocate -t 20M /opt/file2
--- RUN fallocate -t 30M /opt/file3
-++ RUN fallocate -t 20M /opt/result
+-- RUN fallocate -l 10M /opt/file1
+-- RUN fallocate -l 20M /opt/file2
+-- RUN fallocate -l 30M /opt/file3
+++ RUN fallocate -l 20M /opt/result
 
 ++ FROM alpine
-++ COPY --from=test /opt/test2 /opt/myfile
+++ COPY --from=test /opt/result /opt/myfile
 ```
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker build --tag muilti-stage-fallocate:v2 .
+// ...
+demo@VirtualBox:~/Demo_Docker$ docker images
+REPOSITORY              TAG   IMAGE ID       CREATED          SIZE
+muilti-stage-fallocate  v1    6987032f7985   30 seconds ago   263MB
+muilti-stage-fallocate  v2    1cbc38958306   15 seconds ago   25.4MB
+```
+
+--------------------------------------------------------------------------
+
+### Ejercicio Resumen
+
+--------------------------------------------------------------------------
+
