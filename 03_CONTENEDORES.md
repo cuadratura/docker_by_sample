@@ -288,14 +288,42 @@ RUN useradd ricardo
 ```
 
 ```bash
-docker build -t env:v1 .
-docker run -dti --name env env:v1
-docker ps
-docker exec -u ricardo -ti 23kukvb1234 bash
-echo $env
-echo $prueba
+demo@VirtualBox:~/Demo_Docker$ docker build -t env:v1 .
+Sending build context to Docker daemon  2.048kB
+Step 1/3 : FROM centos
+// ...
+Successfully tagged env:v1
+
+demo@VirtualBox:~/Demo_Docker$ docker run -dti --name env env:v1
+2e1105498284b08d0bb503c4c06d429654cfaa7d41234fafcbfc297b628b0fc0
+
+demo@VirtualBox:~/Demo_Docker$ docker ps
+CONTAINER ID  IMAGE   COMMAND     CREATED          STATUS        PORTS   NAMES
+2e1105498284  env:v1  "/bin/bash" 10 seconds ago   Up 9 seconds          env
+
+demo@VirtualBox:~/Demo_Docker$ docker exec -u ricardo -ti env bash
+
+[ricardo@2e1105498284 /]$ echo $env
+
+[ricardo@2e1105498284 /]$ echo $prueba
+1234
+
+[ricardo@2e1105498284 /]$ exit
 exit
-docker run -dti -e "prueba1=4321" --name env-v2 env:v1
-docker exec -u ricardo -ti wdfg234t2g2g bash
-# env
+
+demo@VirtualBox:~/Demo_Docker$ docker run -dti -e "prueba1=4321" --name env-v2 env:v1
+8e152e4487816aa5b60c6401bd06a01ae95bd070bc5980d23f9ee9fdae060fd8
+
+demo@VirtualBox:~/Demo_Docker$ docker ps
+CONTAINER ID  IMAGE   COMMAND     CREATED          STATUS        PORTS   NAMES
+8e152e448781  env:v1  "/bin/bash" 45 seconds ago   Up 44 seconds         env-v2
+2e1105498284  env:v1  "/bin/bash" 10 seconds ago   Up 9 seconds          env
+
+demo@VirtualBox:~/Demo_Docker$ docker exec -u ricardo -ti 8e152e448781 bash
+
+[ricardo@2e1105498284 /]$ env
+// ...
+prueba=1234
+prueba1=4321
+// ...
 ```
