@@ -423,3 +423,33 @@ Si entrasemos en [http://localhost:80](http://localhost:80) veríamos en el nave
 > nuestro contenedor generador iría modificando index.html, y nginex lo serviría.
 
 > Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+--------------------------------------------------------------------------
+
+### QUIZ - Docker VOLUMES
+
+--------------------------------------------------------------------------
+
+1. ¿Cómo crearías un volumen nombrado cuyo nombre debe ser volumen1? 
+    * `docker volume add volume1`
+    * `docker volume create volume1`
+    * `docker volume --create volume1`
+    * Ninguna de las anteriores    
+
+2. Sospechas que Docker está usando mucho espacio en disco y la causa puede ser los danglings volumes. ¿Cómo listarías esos volúmenes?
+    * `docker volume ls -f dangling=true`
+    * `docker volume list dangling=true`
+    * `docker volume ls dangling=true`
+    * `docker volume list -f dangling=true`  
+
+3. ¿Cuál es el formato al mapear un volumen a un contenedor?
+    * `contendor:host`  
+    * `contendor:contenedor:host`    
+    * `host:contenedor`        
+    * `host:host:contenedor`        
+
+4. ¿Cómo obtienes la carpeta root de docker para navegar hacia el directorio de volúmenes?
+    * `docker info | grep -i root`   
+    * `docker info filter root`       
+    * `docker info | root`       
+    * `docker info | set -i root` 
