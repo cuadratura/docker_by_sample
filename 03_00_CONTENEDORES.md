@@ -93,7 +93,7 @@ demo@VirtualBox:~/Demo_Docker$ docker rm -f serene_brown peaceful_torvalds
 demo@VirtualBox:~/Demo_Docker$ docker ps
 ```
 
-> **¿Cómo podemos eliminar todos los contenedores que estén corriendo con un solo comando?** Para ello usaríamos `docker ps -q | xargs docker rm -f`
+> **¿Cómo podemos eliminar todos los contenedores que estén corriendo con un solo comando?** Para ello usaríamos `docker ps -q | xargs docker rm -f` o mediante `docker rm -fv $(docker ps -aq)`.
 
 --------------------------------------------------------------------------
 
@@ -326,30 +326,18 @@ prueba1=4321
 // ...
 ```
 
---------------------------------------------------------------------------
-
-### Crear Contenedor con Mysql
 
 --------------------------------------------------------------------------
 
-Usaremos el comando de descarga del repositorio de **Mysql** `docker pull mysql`.
+### Ver estadísticas de un contenedor
 
 --------------------------------------------------------------------------
 
-> Para esté ejercicio es necesario tener instalado el cliente mysql de ubuntu [https://linuxconfig.org/install-mysql-on-ubuntu-18-04-bionic-beaver-linux](https://linuxconfig.org/install-mysql-on-ubuntu-18-04-bionic-beaver-linux).
+Para ver que consumo tiene un contenedor ejecutaremos `docker stats <container-name>`
 
-Hemos usado los comandos:
-* `sudo apt install mysql-client`, para instalar el cliente mysql en ubuntu 18.04.
-* `mysql -V`, para confirmar la versión instalada.
-* Para conectar remotamente MySQL server se usará el siguiente comando `msql -u USERNAME -p PASSWORD -h HOST-OR-SERVER-IP`
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker stats my-mongo
 
---------------------------------------------------------------------------
-
-Si leemos la documentación oficial de la imagen veremos que necesitamos del siguiente comando para crear el contenedor a partir de la imagen **Mysql** `docker run --name <container-name> -e MYSQL_ROOT_PASSWORD=<pass-root> -d <image-name>:<image:tag>`. 
-
-En nuestro caso usaríamos `docker run --name my-dbl -e "MYSQL_ROOT_PASSWORD=123456" -d mysql:5.7`.
-
-`docker exec -u ricardo -ti 8e152e448781 bash`
-`docker logs -f my-dbl` veremos el inicio del contenedor.
-
-Ahora ejecutaremos el `mysql -u root -p 123456`
+CONTAINER ID  NAME      CPU %  MEM USAGE / LIMIT     MEM %   NET I/O      BLOCK I/O       PIDS
+6d320f9c3e30  my-mongo  0.29%  39.87MiB / 6.313GiB   0.62%   4.21kB / 0B  164kB / 1.11MB  26
+```
