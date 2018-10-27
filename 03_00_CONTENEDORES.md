@@ -93,7 +93,7 @@ demo@VirtualBox:~/Demo_Docker$ docker rm -f serene_brown peaceful_torvalds
 demo@VirtualBox:~/Demo_Docker$ docker ps
 ```
 
-> **¿Cómo podemos eliminar todos los contenedores que estén corriendo con un solo comando?** Para ello usaríamos `docker ps -q | xargs docker rm -f` o mediante `docker rm -fv $(docker ps -aq)`.
+> **¿Cómo podemos eliminar todos los contenedores que estén corriendo con un solo comando?** Para ello usaríamos `docker rm -fv $(docker ps -aq)`.
 
 --------------------------------------------------------------------------
 
@@ -341,3 +341,118 @@ demo@VirtualBox:~/Demo_Docker$ docker stats my-mongo
 CONTAINER ID  NAME      CPU %  MEM USAGE / LIMIT     MEM %   NET I/O      BLOCK I/O       PIDS
 6d320f9c3e30  my-mongo  0.29%  39.87MiB / 6.313GiB   0.62%   4.21kB / 0B  164kB / 1.11MB  26
 ```
+
+--------------------------------------------------------------------------
+
+### Administrar Usuarios
+
+--------------------------------------------------------------------------
+
+Aprenderemos como cambiar el rootname y modificar variables de entorno dentro del contenedor.
+
+_[Dockerfile](./Dockerfile)_
+```dockerfile
+FROM centos
+ENV prueba 1234
+```
+
+Y construimos la imagen mediante `docker build -t centos:prueba .`.
+
+Ahora lanzamos el contenedor `docker run -d -ti --name prueba centos:prueba`.
+
+Ingresamos en **prueba** mediante `docker excec -ti prueba bash`. 
+
+Accedemos a ver la versión de centos de la imagen mediante `cat /etc/redhat-release` y el usuario del contenedor `whoami`.
+
+Modificamos la imagen para crear un nuevo usuario:
+
+_[Dockerfile](./Dockerfile)_
+```diff
+FROM centos
+ENV prueba 1234
+++ RUN useradd ricardo
+++ USER ricardo
+```
+
+En el siguiente paso crearemos una nueva imagen como versión 2 mediante `docker build -t centos:prueba-v2 .`, y lanzamos el contenedor con la nueva imagen `docker run -d -ti --name prueba-v2 centos:prueba-v2`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$docker run -d -ti --name prueba-v2 centos:prueba-v2
+d63f339bd250c71f7d260f4c8890e246a7bd0887a3d2428fe59daf758745ffd7
+
+demo@VirtualBox:~/Demo_Docker$ docker ps
+CONTAINER ID IMAGE            COMMAND      CREATED   STATUS    PORTS                               NAMES
+d63f339bd250 centos:prueba-v2 "/bin/bash"  58 sec... Up 57 ... prueba-v2
+```
+
+Si entramos dentro de la terminal del contenedor veremos que el usuario por defecto es ricardo y no root.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker exec -ti prueba-v2 bash
+[ricardo@d63f339bd250 /]$
+```
+
+Si usasemos el comando `docker exec -u root -ti prueba-v2 bash` indicaríamos que queremos que usuario de acceso sea **root**.
+
+```bash
+[ricardo@d63f339bd250 /]$ exit
+exit
+
+demo@VirtualBox:~/Demo_Docker$ docker exec -u root -ti prueba-v2 bash
+[root@d63f339bd250 /]#
+```
+
+--------------------------------------------------------------------------
+
+### Limitar los recursos de un contenedor
+
+--------------------------------------------------------------------------
+
+Creamos un contenedor de mongo mediante el comando `docker run -d --name my-mongo -p 8081:27017 mongo`.
+
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker run -d --name my-mongo -p 8081:27017 mongo
+6a32e52277c49ad5b2346519e76d811294059cd9ffd420073bf1f1891bcea6e6
+
+demo@VirtualBox:~/Demo_Docker$ docker ps
+CONTAINER ID  IMAGE      COMMAND                 CREATED          STATUS        PORTS     NAMES
+6d320f9c3e30  my-mongo  "docker-entrypoint.s…"   22 minutes ago   Up 22 minutes 0.0....   my-mongo
+```
+
+Para ver que consumo tiene un contenedor ejecutaremos `docker stats my-mongo`
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker stats my-mongo
+
+CONTAINER ID NAME     CPU % MEM USAGE/LIMIT   MEM % NET I/O   BLOCK I/O     PIDS
+6d320f9c3e30 my-mongo 0.29% 39.87MiB/6.313GiB 0.62% 4.21kB/0B 164kB/1.11MB  26
+```
+
+Para limitar el consumo máximo de **RAM** (**6.313GiB**), ejecutaremos el comando `docker run -d -m "500mb" --name my-mongo-2 -p 8081:27017 mongo`
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker run -d -m "500mb" --name my-mongo-2 -p 8081:27017 mongo
+
+demo@VirtualBox:~/Demo_Docker$ docker stats my-mongo-2
+
+CONTAINER ID NAME       CPU % MEM USAGE/LIMIT MEM % NET I/O     BLOCK I/O       PIDS
+6d320f9c3e30 my-mongo-2 0.29% 39.87MiB/500MiB 7.33% 4.21kB / 0B 164kB / 1.11MB  26
+```
+
+Para modificar la cantidad de CPU que usa el contenedor usaremos el siguiente comando. (`grep "model name" /proc/cpui nfo | wc -l` muestra la cantidad de CPU que dispone la máquina)
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ grep "model name" /proc/cpui 
+nfo | wc -l
+2
+
+demo@VirtualBox:~/Demo_Docker$ docker run -d -m "500mb" --name my-mongo-3 --cpuset-cpus 0-1 -p 8081:27017 mongo
+
+demo@VirtualBox:~/Demo_Docker$ docker stats my-mongo-3
+
+CONTAINER ID NAME       CPU % MEM USAGE/LIMIT MEM % NET I/O     BLOCK I/O       PIDS
+6d320f9c3e30 my-mongo-3 0.29% 39.87MiB/500MiB 7.33% 4.21kB / 0B 164kB / 1.11MB  26
+```
+
+> Nota podemos ver todos los comandos relacionados mediante la línea `docker run --help | grep cpu`
