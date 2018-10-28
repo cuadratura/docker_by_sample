@@ -679,3 +679,36 @@ Veremos que el servicio se reinicia **SIEMPRE** de forma automática cuando muer
 ### Cambiar el nombre del Proyecto
 
 --------------------------------------------------------------------------
+
+Docker compose coge por defecto para el nombre de proycto el nombre de la carpeta dónde se aloja el mismo.
+
+Para cambiar el nombre del servicio por defecto usaremos la siguiente línea al lanzar el servicio `docker-compose -p <name-service> up -d` o `docker-compose -p <name-service> -f <filename-docker-compose> up -d`, un ejemplo sería `docker-compose -p web-test up -d`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker-compose -p web-testup -d
+Creating network "web-test_default" with the default driver
+Creating test ... done
+```
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+
+--------------------------------------------------------------------------
+
+### Usar un Nombre Personalziado en docker-compose.yml
+
+--------------------------------------------------------------------------
+
+Para ejecutar la configuración de **Docker Compose** en un archivo alternativo utilizaremos el comando `docker-compose -f <filename-docker-compose> up -d`, como por ejemplo `docker-compose -f docker-compose-cmd.yml up -d`.
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
+
+--------------------------------------------------------------------------
+
+### Más Opciones Docker Compose
+
+--------------------------------------------------------------------------
+
+Para ver las distintas opciones existentes de **Docker Compose** simplemente deberemos escribir en consola el comando `docker-compose`.
+
+> Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
