@@ -1,0 +1,11 @@
+# Se recomienda usar siempre la última version de docker compose
+version: '3'
+# 
+services:
+    # Nuestro primer servicio se llamará `web`
+    web:
+        # https://docs.docker.com/compose/compose-file/
+        container_name: nginx-v1
+        ports:
+            - "8080:80"
+        image: nginx
