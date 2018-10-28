@@ -1,0 +1,11 @@
+version: '3'
+services:
+    web-2:
+        container_name: web-2
+        # Imagen personal
+        image: web-test
+        build: 
+            context: .
+            dockerfile: Dockerfile1
+               
+

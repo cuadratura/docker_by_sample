@@ -1,0 +1,19 @@
+version: '3'
+services:
+    web-1:
+        container_name: Apache-1
+        ports:
+            - "8081:80"
+        image: centos
+        networks:
+            - net-test
+    web-2:
+        container_name: Apache-2
+        ports:
+            - "8082:80"
+        image: centos
+        networks:
+            - net-test            
+networks:
+    net-test:
+

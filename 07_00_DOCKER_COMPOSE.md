@@ -192,6 +192,8 @@ Y lanzamos el contenedor `docker-compose up -d`.
 
 Ahora podríamos ejecutar las mismas comprobaciones anteriores.
 
+> Ejecutaremos `docker-compose down` para detener nuestro contenedor.
+
 --------------------------------------------------------------------------
 
 ### Volúmenes | Nombrados
@@ -215,7 +217,7 @@ volumes:
     vol2:
 ```
 
-Y ejecutamos `docker-compose up -d` para lanzar el contenedor.
+Y ejecutamos `docker-compose up -d` para lanzar el servicio.
 
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
@@ -244,8 +246,170 @@ root@VirtualBox:~/Demo_Docker$
 
 Desmontamos nuestro contenedor `docker-compose down` y lo volvemos a generar `docker-compose up -d` para acceder de nuevas a [http://localhost:8080/](http://localhost:8080/) para ver nuestro contenedor levantado. 
 
+> Ejecutaremos `docker-compose down` para detener nuestro contenedor.
+
 --------------------------------------------------------------------------
 
-### Volúmenes | Host
+### Network
+
+--------------------------------------------------------------------------
+
+Para incluir una red en nuestro contenedor simplemente seguiremos un ejemplo como este **Docker Compose**.
+
+_[docker-compose.yml](./docker-compose.yml)_
+```yml
+version: '3'
+services:
+    web-1:
+        container_name: Apache
+        ports:
+            - "8081:80"
+        image: httpd
+        networks:
+            - net-test           
+networks:
+    net-test:
+```
+
+Creamos una red con ese nombre para que disponga de una configuracion `docker network create net-test`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker network create net-test
+a22f7dd07b48cfb0b042fc1562966ccbc9c062c6cc442a2170546f3aa9216267
+```
+Y levantamos el servicio `docker-compose up -d`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
+Creating network "docker-compose_net-test" with the default driver
+Creating Apache-2 ... done
+Creating Apache-1 ... done
+```
+
+Podemos inspeccionar nuestro servicio, `docker inspect Apache` y ver que tenedríamos una red creada llamada ``.
+
+```bash
+$ docker inspect Apache-1
+[
+    {
+        "Id": "9c6749abd506762307f4e8f947de7605c4efc1ae0c32e27121c765d77f59d0da",
+// ...
+            "Networks": {
+                "docker-compose_net-test": {
+// ...
+                    "Gateway": "192.168.96.1",
+                    "IPAddress": "192.168.96.2",
+// ...
+                }
+            }
+        }
+    }
+]
+```
+
+Si incluyesemos un segundo contenedor en nuestro servicio.
+
+_[docker-compose.yml](./docker-compose.yml)_
+```diff
+version: '3'
+services:
+    web-1:
+        container_name: Apache
+        ports:
+            - "8081:80"
+        image: httpd
+        networks:
+            - net-test   
+++   web-2:
+++       container_name: Apache-2
+++       ports:
+++           - "8082:80"
+++       image: httpd
+++       networks:
+++           - net-test                      
+networks:
+    net-test:
+```
+
+Y ejecutamos `docker-compose up -d` para lanzar el servicio.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
+Creating network "docker-compose_net-test" with the default driver
+Creating Apache-2 ... done
+Creating Apache-1 ... done
+```
+
+Podríamos acceder a la terminal del primero para tester mediante un **PING** la comunicación entre ambos usando `docker exec Apache-1 bash -c "ping Apache-2"`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker exec Apache-1 bash-c "ping Apache-2"
+PING 172.124.10.4 (172.124.10.4) 56(84) bytes of data.
+64 bytes from 172.124.10.4: icmp_seq=1 ttl=64 time=0.085 ms
+64 bytes from 172.124.10.4: icmp_seq=2 ttl=64 time=0.066 ms
+```
+
+> Ejecutaremos `docker-compose down` para detener nuestro contenedor.
+
+--------------------------------------------------------------------------
+
+### Imágenes
+
+--------------------------------------------------------------------------
+
+Podemos crear imágenes mediante **Docker Compose** usando el comando `docker-compose build`.
+
+Nuestro [docker-compose.yml](docker-compose.yml) será así:
+
+_[docker-compose.yml](docker-compose.yml)_
+```yml
+version: '3'
+services:
+    web-1:
+        container_name: web-1
+        # Imagen personal
+        image: web-test
+        build: .
+```
+
+Y dispondremos de un [Dockerfile](Dockerfile) así:
+
+_[Dockerfile](Dockerfile)_
+```dockerfile
+FROM centos
+RUN mkdir /opt/test
+```
+
+Este sistema construirá una imagen desde un [Dockerfile](Dockerfile) que se encuentre en la misma carpeta.
+
+**¿Cómo se haría si [Dockerfile](Dockerfile) se llamara de otra forma?**
+
+_[docker-compose.yml](docker-compose.yml)_
+```yml
+version: '3'
+services:
+    web-2:
+        container_name: web-2
+        # Imagen personal
+        image: web-test
+        build: 
+            context: .
+            dockerfile: Dockerfile1
+```
+
+Y dispondremos de un [Dockerfile](Dockerfile) así:
+
+_[Dockerfile1](Dockerfile1)_
+```dockerfile
+FROM centos
+RUN mkdir /opt/test
+```
+
+Igualmente construiríamos la imagen mediante el comando `docker-compose build`.
+
+
+--------------------------------------------------------------------------
+
+### Modificar un CMD de un contenedor
 
 --------------------------------------------------------------------------
