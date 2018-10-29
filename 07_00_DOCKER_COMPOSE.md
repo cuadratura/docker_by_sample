@@ -259,7 +259,61 @@ Desmontamos nuestro contenedor `docker-compose down` y lo volvemos a generar `do
 
 --------------------------------------------------------------------------
 
-### Network
+### Volúmenes | Host (FAILED) (80)
+
+--------------------------------------------------------------------------
+
+Creamos nuestra configuración **Docker Compose**.
+
+Creamos la carpeta que alojará el volumen `mkdir html` y le otorgamos permisos de ejecución `sudo chown 1000 -R ~/docker-compose/html`, siendo **/home/demo/docker-compose/** nuestra carpeta.
+
+_[docker-compose.yml](./docker-compose.yml)_
+```yml
+version: '3'
+services:
+    web:
+        container_name: nginx-2
+        ports:
+            - "8080:80"
+        image: nginx
+        volumes:
+            - "/home/demo/docker-compose/html:/user/share/nginx/html"
+```
+
+Y ejecutamos `docker-compose up -d` para lanzar el servicio.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
+Creating network "docker-compose_default" with the default driver
+Creating volume "docker-compose_vol2" with default driver
+Creating nginx-2 ... done
+```
+
+Vemos que se generó una red denominada **docker-compose_default** y un volumen **docker-compose_vol2**.
+
+Para comprobar que efectivamente funciona el volumen, accederemos al **document Root de Docker** mediante el comando `docker info | grep -i root`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ docker info | grep -i root
+WARNING: No swap limit support
+Docker Root Dir: /var/lib/docker
+```
+
+Cambiamos nuestro rol `sudo su` y accedemos a la ubicación `/var/lib/docker/volumes/docker-compose_vol2/_data` para modificar nuestro `index.html`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ sudo su
+[sudo] password for hector:
+root@VirtualBox:~/Demo_Docker$ 
+```
+
+Desmontamos nuestro contenedor `docker-compose down` y lo volvemos a generar `docker-compose up -d` para acceder de nuevas a [http://localhost:8080/](http://localhost:8080/) para ver nuestro contenedor levantado. 
+
+> Ejecutaremos `docker-compose down` para detener nuestro contenedor.
+
+--------------------------------------------------------------------------
+
+### Network (FAILED) (81-82)
 
 --------------------------------------------------------------------------
 
@@ -291,14 +345,13 @@ Y levantamos el servicio `docker-compose up -d`.
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
 Creating network "docker-compose_net-test" with the default driver
-Creating Apache-2 ... done
-Creating Apache-1 ... done
+Creating Apache ... done
 ```
 
-Podemos inspeccionar nuestro servicio, `docker inspect Apache` y ver que tenedríamos una red creada llamada ``.
+Podemos inspeccionar nuestro servicio, `docker inspect Apache` y ver que tendríamos una red creada llamada `docker network`.
 
 ```bash
-$ docker inspect Apache-1
+$ docker inspect Apache
 [
     {
         "Id": "9c6749abd506762307f4e8f947de7605c4efc1ae0c32e27121c765d77f59d0da",
@@ -346,13 +399,13 @@ Y ejecutamos `docker-compose up -d` para lanzar el servicio.
 demo@VirtualBox:~/Demo_Docker$ docker-compose up -d
 Creating network "docker-compose_net-test" with the default driver
 Creating Apache-2 ... done
-Creating Apache-1 ... done
+Creating Apache ... done
 ```
 
-Podríamos acceder a la terminal del primero para tester mediante un **PING** la comunicación entre ambos usando `docker exec Apache-1 bash -c "ping Apache-2"`.
+Podríamos acceder a la terminal del primero para tester mediante un **PING** la comunicación entre ambos usando `docker exec Apache bash -c "ping Apache-2"`.
 
 ```bash
-demo@VirtualBox:~/Demo_Docker$ docker exec Apache-1 bash-c "ping Apache-2"
+demo@VirtualBox:~/Demo_Docker$ docker exec Apache bash -c "ping Apache-2"
 PING 172.124.10.4 (172.124.10.4) 56(84) bytes of data.
 64 bytes from 172.124.10.4: icmp_seq=1 ttl=64 time=0.085 ms
 64 bytes from 172.124.10.4: icmp_seq=2 ttl=64 time=0.066 ms
@@ -420,7 +473,7 @@ Igualmente construiríamos la imagen mediante el comando `docker-compose build`.
 
 --------------------------------------------------------------------------
 
-### Modificar un CMD de un contenedor
+### Modificar un CMD de un contenedor (FAILED) (83)
 
 --------------------------------------------------------------------------
 
