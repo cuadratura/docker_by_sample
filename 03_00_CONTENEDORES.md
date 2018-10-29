@@ -75,7 +75,7 @@ Ahora si accedemos a [http://localhost:8080](http://localhost:8080) veremos que 
 
 --------------------------------------------------------------------------
 
-### Borrar contenedores
+### Eliminar contenedores
 
 --------------------------------------------------------------------------
 

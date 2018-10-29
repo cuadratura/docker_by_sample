@@ -7,6 +7,8 @@
 
 Para eliminar Imágenes existen distintas opciones: `docker rmi <image-name>:<image-tag>` o `docker rmi <image-id>`.
 
+> **Nota:** Para eliminar todas las imágenes existentes uasremos `docker rmi $(docker images -q)`.
+
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker images | grep apache
 
