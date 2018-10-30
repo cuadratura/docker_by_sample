@@ -259,7 +259,7 @@ Desmontamos nuestro contenedor `docker-compose down` y lo volvemos a generar `do
 
 --------------------------------------------------------------------------
 
-### Volúmenes | Host (FAILED) (80)
+### Volúmenes | Host
 
 --------------------------------------------------------------------------
 
@@ -277,8 +277,10 @@ services:
             - "8080:80"
         image: nginx
         volumes:
-            - "/home/demo/docker-compose/html:/user/share/nginx/html"
+            - "/home/demo/docker-compose/html:/usr/share/nginx/html"
 ```
+
+> La ruta origen `/home/demo/docker-compose/html`deberá estar relacionada con la de la máquina existente, esta es una demo.
 
 Y ejecutamos `docker-compose up -d` para lanzar el servicio.
 
@@ -290,6 +292,15 @@ Creating nginx-2 ... done
 ```
 
 Vemos que se generó una red denominada **docker-compose_default** y un volumen **docker-compose_vol2**.
+
+Ademas de dentro de la carpeta del proyecto la carpeta html definida, de la cual habrá que modificar sus permisos de acceso, primeramente accediendo al usuario **sudo** `sudo su` para incluir posteriormente su password, y a continuación indicar los nuevos permisos de acceso `chown 1000 -R html`.
+
+```bash
+demo@VirtualBox:~/Demo_Docker$ sudo su
+[sudo] password for demo:
+
+root@VirtualBox:~/Demo_Docker$ chown 1000 -R html
+```
 
 Para comprobar que efectivamente funciona el volumen, accederemos al **document Root de Docker** mediante el comando `docker info | grep -i root`.
 
@@ -473,7 +484,7 @@ Igualmente construiríamos la imagen mediante el comando `docker-compose build`.
 
 --------------------------------------------------------------------------
 
-### Modificar un CMD de un contenedor (FAILED) (83)
+### Modificar un CMD de un contenedor
 
 --------------------------------------------------------------------------
 
@@ -500,7 +511,7 @@ version: '3'
 services:
     web:
         image: centos
-        command: phyton -m SimpleHTTPServer 8080
+        command: python -m SimpleHTTPServer 8080
         ports: 
             - "8080:8080"
 ```

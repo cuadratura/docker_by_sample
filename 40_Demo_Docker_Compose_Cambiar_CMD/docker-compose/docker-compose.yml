@@ -2,7 +2,7 @@ version: '3'
 services:
     web:
         image: centos
-        command: phyton -m SimpleHTTPServer 8080
+        command: python -m SimpleHTTPServer 8080
         ports: 
             - "8080:8080"
         

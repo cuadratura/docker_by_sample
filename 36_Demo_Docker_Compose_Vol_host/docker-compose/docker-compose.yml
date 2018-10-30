@@ -1,0 +1,11 @@
+version: '3'
+services:
+    web:
+        container_name: nginx-2
+        ports:
+            - "8081:80"
+        volumes:
+            - "/home/hector/docker_by_sample/36_Demo_Docker_Compose_Vol_host/docker-compose/html:/usr/share/nginx/html"
+            # - "/home/demo/docker-compose/data:/usr/share/nginx/html"
+        image: nginx
+
