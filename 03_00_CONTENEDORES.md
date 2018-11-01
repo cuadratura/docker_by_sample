@@ -12,7 +12,7 @@
 
 --------------------------------------------------------------------------
 
-Para ello utilizaremos el comando `docker ps` para los contenedores que están corriendo en ese instante, y `docker ps -a`para los contenedores que estan corriendo más los ya muertos.
+Para ello utilizaremos el comando `docker ps` para los contenedores que están corriendo en ese instante, y `docker ps -a` para los contenedores que estan corriendo más los ya muertos.
 
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker ps
@@ -69,7 +69,7 @@ e30e0d57b591 jenkins  "/bin/tini …"  7 seconds ago  Up 4 seconds 8080/tcp, 500
 demo@VirtualBox:~/Demo_Docker$
 ```
 
-Podemos ver como `0.0.0.0:8080->8080/tcp`el puerto `8080` se mapeo ya con el del contenedor en la nueva imagen `serene_brown`.
+Podemos ver como `0.0.0.0:8080->8080/tcp` el puerto `8080` se mapeo ya con el del contenedor en la nueva imagen `serene_brown`.
 
 Ahora si accedemos a [http://localhost:8080](http://localhost:8080) veremos que tenemos acceso a jenkins.
 
@@ -696,7 +696,7 @@ buildkit  containers  network  plugins   swarm     trust
 root@VirtualBox:~/Demo_Docker$
 ```
 
-Cada vez que ejecutamos el comando `docker images`se muestra el contenido de imágenes alojadas en el **document root** de **docker**.
+Cada vez que ejecutamos el comando `docker images` se muestra el contenido de imágenes alojadas en el **document root** de **docker**.
 
 Para cambiar su ubicación deberemos cambiar el archivo de configuración de docker ubicado en **/lib/systemd/system/docker.service**
 
@@ -728,35 +728,40 @@ Si escribieramos un `docker images`aparecerá vacío al estar la nueva ubicació
 --------------------------------------------------------------------------
 
 1. ¿Cuál es el puerto del contenedor? `docker run -d -p 8080:80 --name jenkins jenkins`
-  * 8080
-  * 80
+
+* 8080
+* 80
 
 2. El comando: `docker ps -l' retorna:
-  * El último contenedor creado
-  * El primer contenedor creado
-  * El contenedor creado con variables de entorno
+
+* El último contenedor creado
+* El primer contenedor creado
+* El contenedor creado con variables de entorno
 
 3. ¿Cómo limitarías el uso de RAM de un contenedor creado con la imagen de mysql a 10M?
-    * `docker run -d --set-memory-ram "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
-    * `docker run -d --set-mem-ram "10M" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
-    * `docker run -d -m "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
-    * `docker run -d --max-ram-allowed "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql   
+
+* `docker run -d --set-memory-ram "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
+* `docker run -d --set-mem-ram "10M" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
+* `docker run -d -m "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql
+* `docker run -d --max-ram-allowed "10mb" -e "MYSQL_ROOT_PASSWORD=1234567" mysql   
 
 4. Necesitas crear un contenedor de mongo, cuyo puerto interno es 27017, pero en tu host ya tienes ocupado ese puerto, así que, debes utilizar el puerto 27018. ¿Cómo lo harías?
-    * -p 27017
-    * -p 27017:27018
-    * -p 27018:27017
-    * No es posible
+
+* -p 27017
+* -p 27017:27018
+* -p 27018:27017
+* No es posible
 
 5. Ingresaste a un contenedor llamado drupal de esta manera: 
 `docker exec -ti drupal bash`. 
 Ahora quieres observar el contenido del archivo `/etc/shadow`, `[drupal@12dbs3bdsa] cat /etc/shadow`. 
 Y recibes este error `bash: permission denied` 
 ¿Cómo lo solucionarías?
-    * Ingresando al contenedor con el usuario root. `docker exec -ti -u root bash`
-    * Ingresando al contenedor con el usuario root. `docker exec -ti -u drupal bash`
-    * Ingresando al contenedor con el usuario root. `docker exec -ti -u root drupal bash`
-    * Ingresando al contenedor con el usuario root. `docker exec -ti -u drupal drupal bash` 
+
+* Ingresando al contenedor con el usuario root. `docker exec -ti -u root bash`
+* Ingresando al contenedor con el usuario root. `docker exec -ti -u drupal bash`
+* Ingresando al contenedor con el usuario root. `docker exec -ti -u root drupal bash`
+* Ingresando al contenedor con el usuario root. `docker exec -ti -u drupal drupal bash` 
 
 6. Quieres copiar el archivo `/var/log/postgres/postgres.log`desde tu contenedor llamado db hacia `/opt` de tu máquina. ¿Cómo lo harías?
 
