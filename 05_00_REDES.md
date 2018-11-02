@@ -15,7 +15,7 @@ demo@VirtualBox:~/Demo_Docker$ ip a | grep docker
 
 La red por defecto de **docker** es **docker0**, la cual asigna un rango de subnets.
 
-Si creamos un contenedor nuevo, por ejemplo `docker run -d --name centos centos`, y lo inspeccionamos `docker inspect centos`veremos que su **IpAddress** estará dentro de ese subrango.
+Si creamos un contenedor nuevo, por ejemplo `docker run -d --name centos centos`, y lo inspeccionamos `docker inspect centos` veremos que su **IpAddress** estará dentro de ese subrango.
 
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker run -d --name centos centos

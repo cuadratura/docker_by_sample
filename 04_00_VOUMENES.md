@@ -235,9 +235,9 @@ a024e29e945b5817dd58c543a5b8495f4edd8395706d4d51d186fac5f21916b0
 demo@VirtualBox:~/Demo_Docker$ docker inspect mysql | grep a024e29e945b5817dd5
 ```
 
-> Estos volúmenes no se recomiendan ya que usan carpetas de almacenaje deficiles de gestioanr por su nombren, y ya que si eliminaos el contenedor con este comando `docker -rm -fv mysql` también se elimina el volumen, hecho que evitaremos si usamos `docker -rm -f mysql`.
+> Estos volúmenes no se recomiendan ya que usan carpetas de almacenaje difíciles de gestionar por su nombre, y ya que si eliminamos el contenedor con este comando `docker -rm -fv mysql` también se elimina el volumen, hecho que evitaremos si usamos `docker -rm -f mysql`.
 
-Para retomar el contenedor que ya no corre deberemos incluir la ubicación random del volumen en su comando de generación tal que así: `docker run -d --name db -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=12345678" -v /var/lib/docker/a024e29e945b5817dd58c543a5b8495f4edd8395706d4d51d186fac5f21916b0:/var/lib/mysql mysql:5.7`, siendo `/var/lib/docker/a024e29e945b5817dd58c543a5b8495f4edd8395706d4d51d186fac5f21916b0`la ubicación del volumen anónimo de nuestro contenedor.
+Para retomar el contenedor que ya no corre deberemos incluir la ubicación random del volumen en su comando de generación tal que así: `docker run -d --name db -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=12345678" -v /var/lib/docker/a024e29e945b5817dd58c543a5b8495f4edd8395706d4d51d186fac5f21916b0:/var/lib/mysql mysql:5.7`, siendo `/var/lib/docker/a024e29e945b5817dd58c543a5b8495f4edd8395706d4d51d186fac5f21916b0` la ubicación del volumen anónimo de nuestro contenedor.
 
 > Para borrar todos los contenedores usaremos el comando `docker rm -fv $(docker ps -aq)`.
 
@@ -335,7 +335,7 @@ Para correr la imagen de **jenkins** descargada usaremos el comando siguiente `d
 
 Si buscamos en la documentación oficial de mongo veremos que guarda su contenido creado dentro de `/var/jenkins_home`.
 
-> Nota: Previamente será necesario crear la carpeta `/opt/jenkins/`que será dónde se guaradrá nuestro volumen.
+> Nota: Previamente será necesario crear la carpeta `/opt/jenkins/` que será dónde se guaradrá nuestro volumen.
 
 Accedemos a [http://localhost:8080](http://localhost:8080), podemos crear algo de contenido y probar que verdaderamnete se guardó.
 
