@@ -1,6 +1,10 @@
+# Resumen de Comandos en Docker
+
 > **NOTA**: Para acceder al `Document Root de Docker` necesitamos estar logueado como administrador `sudo su`, para posteriormente mediante el comando `docker info | grep -i root` visualizar la carpeta dónde se aloja toda la información de docker `Docker Root Dir: /var/lib/docker`.
 
-# Imágenes
+## IMÁGENES
+
+--------------------------------------------------------------------------
 
 * Listar imágenes, `docker images`
 * Listar imágenes con filtro `docker images | grep <filter>`
@@ -11,7 +15,9 @@
 * Eliminar imagen, `docker rmi <image-name>:<image-tag>` o `docker rmi <image-id>`
 * Eliminar todas las imágenes huerfanas `docker images -f dangling=true -q | xargs docker rmi`
 
-# Contenedores
+## CONTENEDORES
+
+--------------------------------------------------------------------------
 
 * Listar contenedores en ejecución, `docker ps`
 * Listar contenedores recientes, `docker ps -a`
@@ -38,14 +44,18 @@
 * Inspeccionar contenedor, `docker inspect <container-name> 
 * Ejecutar comando consola en contenedor, `docker exec <container-name> bash -c "<command-container>"`
 
-# Volúmenes
+## VOLÚMENES
+
+--------------------------------------------------------------------------
 
 * Crear volumen `docker volume create <volume-name>`
 * Listar volúmenes, `docker volume ls`
 * Listar volúmenes anónimos, `docker volume ls -f dangling=true`
 * Eliminar todos los volúmenes huérfanos, `docker volume ls -f dangling=true -q | xargs docker volume rm`
 
-# Redes
+## REDES
+
+--------------------------------------------------------------------------
 
 * Ayuda Network, `docker network --help`
 * Inspeccionar Network, `docker inspect network <network-name>`

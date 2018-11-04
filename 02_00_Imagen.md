@@ -1,7 +1,8 @@
+# Imágenes
 
 --------------------------------------------------------------------------
 
-### Eliminar Imágenes
+## ELIMINAR IMÁGENES
 
 --------------------------------------------------------------------------
 
@@ -39,10 +40,7 @@ apache-cento-ignores   latest              70350adbd1a5        21 hours ago     
 
 Puede ser que nos encontremos el siguiente mensaje al intentar eliminar una imagen: `Error response from daemon: conflict: unable to delete 0300eedbad44 (must be forced) - image is being used by stopped container bfb973bc90c5`, ello implicará que previamente es necesario para el contenedor en marcha, ya que dicha imagen está en uso por algún contenedor.
 
-
---------------------------------------------------------------------------
-
-### Construir una imagen alternativa a DokerFile
+## CONSTRUIR UNA IMAGEN ALTERNATIVA A DOCKERFILE
 
 --------------------------------------------------------------------------
 
@@ -62,10 +60,7 @@ En este caso nuestro nuevo **Dockerfile**, se llamará **my-dockerfile**, y para
 demo@VirtualBox:~/Demo_Docker$ docker build -t centos:hello -f my-dockerfile .
 ```
 
-
---------------------------------------------------------------------------
-
-### Imagenes huerfanas (Dangling Images)
+## IMÁGENES HUERFANAS (DANGLING IMAGES)
 
 --------------------------------------------------------------------------
 
@@ -79,8 +74,8 @@ RUN \
     echo "hola" >> /tmp/hola1
 
 RUN echo "bye" > /tmp/bye  
- 
-RUN echo "test" > /tmp/test   
+
+RUN echo "test" > /tmp/test
 ```
 
 y la construimos con el comando ya visto `docker build --tag dangling-image .`.
@@ -105,23 +100,23 @@ Removing intermediate container f304f7e4ff09
 Successfully built afbe90498ce1
 Successfully tagged dangling-image:latest
 ```
-Ahora modificamos nuestro **dockerfile** en alguna de sus capas para regenerar la imagen. 
+
+Ahora modificamos nuestro **dockerfile** en alguna de sus capas para regenerar la imagen.
 
 ```diff
 FROM centos
-
 RUN \
     echo "hola" > /tmp/hola && \
     echo "hola" >> /tmp/hola1
 
 -- RUN echo "bye" > /tmp/bye  
 ++ RUN echo "bye" > /tmp/bye1
- 
-RUN echo "test" > /tmp/test   
+
+RUN echo "test" > /tmp/test
 ```
 
 Y volvemos a regenerar la imagen con el mismo comando anterior para mantener el nombre de la imagen `docker build --tag dangling-image .`
- 
+
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker build --tag dangling-image .
 Sending build context to Docker daemon  2.048kB
@@ -144,7 +139,7 @@ Successfully tagged dangling-image:latest
 
 Veremos que hay parte de la construcción de la imagen que no usa cache, generando una imagen totalmente nueva.
 
-Si ahora usamos el comando que muestre las imágenes `docker images`, veremos dos imágenes una de ellas no referenciadas o huerfana `<none>:
+Si ahora usamos el comando que muestre las imágenes `docker images`, veremos dos imágenes una de ellas no referenciadas o huerfana `<none>`:
 
 ```bash
 demo@VirtualBox:~/Demo_Docker$ docker images
@@ -155,10 +150,9 @@ dangling-image      latest              e40a2c6f5ece        3 minutes ago       
 
 Si repitiésemos la jugada, aparecería una nueva imagen no referenciada.
 
-> *¿Por qué al recrear una nueva imagen con el mismo tag deja huerfana a la anterior existente?* Esto ocurre ya que las capas son de sólo lectura y cada vez que se modifica una capa se genera una nueva imagen, colocando el nombre definido, pero si ya existía una imagen con ese nombre la dejará huerfana `<none>`. Por ello se recomienda usar *tags* para ir versionando las imágenes.
+> **¿Por qué al recrear una nueva imagen con el mismo tag deja huerfana a la anterior existente?** Esto ocurre ya que las capas son de sólo lectura y cada vez que se modifica una capa se genera una nueva imagen, colocando el nombre definido, pero si ya existía una imagen con ese nombre la dejará huerfana `<none>`. Por ello se recomienda usar *tags* para ir versionando las imágenes.
 
-
-#### ¿Cómo podrías recuperar un listado de las imágenes huerfanas?
+### ¿Cómo podrías recuperar un listado de las imágenes huerfanas?
 
 Usaremos el comando `docker images -f <tilter>=true`, por ejemplo en este caso usaríamos `docker images -f dangling=true`. Veríamos un resultado así:
 
@@ -196,10 +190,7 @@ demo@VirtualBox:~/Demo_Docker$ docker images -f dangling=true
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 ```
 
-
---------------------------------------------------------------------------
-
-### Demo Nginx PHP y FPM
+## EJEMPLO | Demo Nginx PHP y FPM
 
 --------------------------------------------------------------------------
 
@@ -216,6 +207,7 @@ Incluimos la configuración de **nginx** para **centos**, buscando en google ([n
 Y creamos el archivo del repositorio, el cual copiaremos dentro del contenedor.
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 
@@ -223,6 +215,7 @@ FROM centos:7
 ```
 
 _[nginx.repo](nginx.repo)_
+
 ```repo
 [nginx]
 name=nginx repo
@@ -234,16 +227,18 @@ enabled=1
 Es momento de incluir la instalación de **nginx**, ya que disponemos de su repositorio:
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
 ++ RUN \
-++  yum -y install nginx --enablerepo=nginx 
+++  yum -y install nginx --enablerepo=nginx
 ```
 
 Más los paquetes relativos a las distintas versiones de php para nginx, instalando ius (búsqueda en google [install ius repo centos 7](https://www.google.com/search?source=hp&ei=yDnTW92aKcWYlwTxja_ABg&q=install+ius+repo+centos+7&oq=install+ius+repo+centos+7&gs_l=psy-ab.3..0.8395.8395.0.8764.3.2.0.0.0.0.112.112.0j1.2.0....0...1c.1.64.psy-ab..1.2.247.6..35i39k1.136.foPHB-bI6mk)) dentro de [https://ius.io/GettingStarted/](https://ius.io/GettingStarted/).
 
 _[/conf/nginx.repo](./conf/nginx.repo)_
+
 ```repo
 [nginx]
 name=nginx repo
@@ -253,6 +248,7 @@ enabled=1
 ```
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -264,6 +260,7 @@ RUN \
 Ahora instalamos los paquetes de **php 7** en **ius** **centos** version **7**.
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -282,12 +279,13 @@ RUN \
 ++   php71u-mcrypt \
 ++   php71u-mbstring \
 ++   php71u-zip \
-++   php71u-gd                                                                
+++   php71u-gd
 ```
 
 Y habilitamos el repo descargado:
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -305,7 +303,7 @@ RUN \
     php71u-mcrypt \
     php71u-mbstring \
     php71u-zip \
---  php71u-gd                                                               
+--  php71u-gd
 ++  php71u-gd \
 ++   --enablerepo=ius && yum clean all
 ```
@@ -313,6 +311,7 @@ RUN \
 Crearemos un par de volúmenes para alojar nuestro código:
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -321,7 +320,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 
@@ -331,6 +330,7 @@ RUN \
 E incluimos la configuración dentro del contenedor mediante COPY.
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -350,6 +350,7 @@ VOLUME /var/www/html /var/log/nginx /var/log/php-fpm /var/lib/php-fpm
 Nuestro [/conf/nginx.conf](./conf/nginx.conf) será algo así (google [nginx php-fpm vhost example](https://www.google.es/search?ei=1krTW4uhNImRgAb7q72oAg&q=nginx+php-fpm+vhost+example&oq=nginx+php-fpm+vhost+example&gs_l=psy-ab.3..0i203k1j0i22i30k1.5355.6443.0.7223.8.8.0.0.0.0.126.868.2j6.8.0....0...1c.1.64.psy-ab..0.8.866....0.M8kmdYto6Eo)) [https://gist.github.com/lukearmstrong/7155390](https://gist.github.com/lukearmstrong/7155390):
 
 _[/conf/nginx.conf](./conf/nginx.conf)_
+
 ```conf
 server {
   listen       80;
@@ -411,6 +412,7 @@ server {
 Además incluimos un script con varios CMD.
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -419,7 +421,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 VOLUME /var/www/html /var/log/nginx /var/log/php-fpm /var/lib/php-fpm 
@@ -429,6 +431,7 @@ COPY ./conf/nginx.conf /etc/nginx/conf.d/default.conf
 ```
 
 _[/bin/start.sh](./bin/start.sh)_
+
 ```sh
 #!/bin/bash
 # Starts php process in background
@@ -440,6 +443,7 @@ nginx -g 'daemon off;'
 E incluimos permisos de ejecución al script ya copiado:
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -448,7 +452,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 VOLUME /var/www/html /var/log/nginx /var/log/php-fpm /var/lib/php-fpm 
@@ -460,8 +464,8 @@ COPY ./bin/start.sh /start.sh
 
 Para finalmente iniciar nuestro CMD.
 
-
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -470,7 +474,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 VOLUME /var/www/html /var/log/nginx /var/log/php-fpm /var/lib/php-fpm 
@@ -483,8 +487,8 @@ RUN chmod +x /start.sh
 
 Incluiremos un index.php con `<?php phpinfo(); ?>` para testear el correcto funcionamiento de nuestro contenedor:
 
-
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -493,7 +497,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 VOLUME /var/www/html /var/log/nginx /var/log/php-fpm /var/lib/php-fpm 
@@ -509,6 +513,7 @@ CMD /start.sh
 No debemos olvidar incluir los puertos expuestos: 
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM centos:7
 COPY ./conf/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -517,7 +522,7 @@ RUN \
   yum -y install https://centos7.iuscommunity.org/ius-release.rpm && \
   yum -y install \
     php71u-fpm \
-    // ...                                                               
+    // ...
     php71u-gd \
      --enablerepo=ius && yum clean all
 
@@ -535,18 +540,15 @@ Ejecutaremos el comando para construir nuestra nueva imagen `docker build --tag 
 
 > GO TO: [http://localhost/](http://localhost/)
 
+## MULTISTAGE BUILDING
 
 --------------------------------------------------------------------------
 
-### MultiStage Building
-
---------------------------------------------------------------------------
-
-#### Multi Stage Build 
+### Multi Stage Build 
 
 El **Multi Stage Build** permite usar en un mismo **Dokerfile** usar varios FROM para crear imágenes diferentes por temas de dependencias entre las mismas.
 
-##### Ejemplo 1
+### EJEMPLO MULTISTAGE BUILDING
 
 Por ejemplo, quiero crear un **jar** desde una imagen **maven** para copiar esa **jar** en una imagen **java**.
 
@@ -555,6 +557,7 @@ Por ejemplo, quiero crear un **jar** desde una imagen **maven** para copiar esa 
 Primero crearemos una imagen simple con **maven** que incluya una aplicación simple de java con maven (Google [maven sample app](https://www.google.es/search?q=maven+sample+app&oq=maven+sample+app&aqs=chrome..69i57j0l5.751j0j9&sourceid=chrome&ie=UTF-8)), cuya fuente será : [https://github.com/jenkins-docs/simple-java-maven-app](https://github.com/jenkins-docs/simple-java-maven-app).
 
 _[Dockerfile](./Dockerfile)_
+
 ```dockerfile
 FROM maven:3.5-alpine
 ```
@@ -568,6 +571,7 @@ demo@VirtualBox:~/Demo_Docker$ git clone https://github.com/jenkins-docs/simple-
 E incluiremos el repositorio en nuestra imagen más la línea de construcción de **maiven**:
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 FROM maven:3.5-alpine
 ++ COPY app /app
@@ -589,6 +593,7 @@ java-multi-stage-build   v1                  28e4136653f4        28 seconds ago 
 Ahora incluiremos el nuevo FROM en nuestro **Dockerfile** para incluir desde dónde queremos copiar nuestro **jar**
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 -- FROM maven:3.5-alpine
 ++ FROM maven:3.5-alpine as builder
@@ -623,11 +628,12 @@ demo@VirtualBox:~/Demo_Docker$ docker logs java-multi-stage-build-v2
 hello-world
 ```
 
-##### Ejemplo 2
+#### EJEMPLO 2
 
 Construyamos nuestra imagen a partir del siguiente **Dockerfile**.
 
 _[Dockerfile](./Dockerfile)_
+
 ```dockerfile
 FROM centos
 
@@ -651,6 +657,7 @@ muilti-stage-fallocate  v1    6987032f7985   15 seconds ago   263MB
 Si repetimos la estrategia anterior, imaginando que la resultante de la compilación de esos tres archivos es uno nuevo de pero 20M, observaremos que la imagen resultante pasa a pesar sólo **25.4MB**.
 
 _[Dockerfile](./Dockerfile)_
+
 ```diff
 -- FROM centos
 ++ FROM centos as test
@@ -673,9 +680,7 @@ muilti-stage-fallocate  v1    6987032f7985   30 seconds ago   263MB
 muilti-stage-fallocate  v2    1cbc38958306   15 seconds ago   25.4MB
 ```
 
---------------------------------------------------------------------------
-
-### Ejercicio Resumen
+### EJERCICIO RESUMEN
 
 --------------------------------------------------------------------------
 
@@ -688,51 +693,3 @@ muilti-stage-fallocate  v2    1cbc38958306   15 seconds ago   25.4MB
 
 --------------------------------------------------------------------------
 
-### QUIZ - Docker IMAGES
-
---------------------------------------------------------------------------
-
-1. En la siguiente línea de un Dockerfile: `ENV animal gato`. ¿Cuál es el nombre de la variable?
-  * animal
-  * gato
-  * ENV
-
-2. Considerando la siguiente imagen: `centos`. ¿Cuál es el tag que está usando?
-  * Ninguno
-  * new
-  * latest
-  * old
-
-3. Observa estas líneas de un Dockerfile:
-```dockerfile
-USER foo
-USER bar
-RUN echo "Hola, mi nombre es $(whoami)" > /tmp/user.txt
-```
-¿Qué nombre estará dentro del archivo `/tmp/user.txt`?
-  * bar
-  * foo
-  * Ninguno
-
-4. Existen dos archivos comprimidos en tu directorio actual:
-```dockerfile
-zip1 -> 10M
-zip2 -> 15M
-```
-Considera el contenido de este **.dockerignore** : $ cat .dockerignore `zip2`
-Si construyes una imagen en el directorio actual, ¿de cuánto será el contexto enviado a Docker?
-  * 25M
-  * 15M
-  * 10M
-  * 0M
-
-5. Escoge cuál declaración es correcta.
-  * Pudeo generar un Dockerfile usando todos los argumentos, pero no es obligatorio.
-  * Puedo generar un Dockerfile usando todos los argumentos, es obligatrio.
-  * No puedo generar un Dockerfile con todos los argumentos
-  * Si genero un Dockerfile con todos los argumentos, a calidad de la imagen será baja.
-
-6. Quieres instalar varios paquetes en una sola capa, ¿cómo lo harías?
-  * `RUN yum -y install && httpd && php`
-  * `RUN yum -y install httpd && php`
-  * `RUN yum -y install httpd php`
