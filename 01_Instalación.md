@@ -1,14 +1,14 @@
---------------------------------------------------------------------------
-
-### Instalación
+# Instalación
 
 --------------------------------------------------------------------------
 
-#### Docker CE
+## DOCKER CE
+
+--------------------------------------------------------------------------
 
 Para Instalar Docker, recurriremos a la docuemntación oficial de **[Docker Doc](https://docs.docker.com/install/linux/docker-ce/ubuntu/#os-requirements)**.
 
-Actualizamos el índice de **apt package**: 
+Actualizamos el índice de **apt package**:
 
 ```bash
 sudo apt-get update
@@ -69,7 +69,9 @@ demo@VirtualBox:~/Demo_Docker$ sudo usermod -aG docker hector
 [sudo] password for demo:
 ```
 
-#### Docker Compose
+## DOCKER COMPOSE
+
+--------------------------------------------------------------------------
 
 Para Instalar Docker Compose, recurriremos a la docuemntación oficial de **[Docker Doc](https://docs.docker.com/compose/install/)**.
 
