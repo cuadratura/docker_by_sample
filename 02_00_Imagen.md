@@ -40,6 +40,8 @@ apache-cento-ignores   latest              70350adbd1a5        21 hours ago     
 
 Puede ser que nos encontremos el siguiente mensaje al intentar eliminar una imagen: `Error response from daemon: conflict: unable to delete 0300eedbad44 (must be forced) - image is being used by stopped container bfb973bc90c5`, ello implicará que previamente es necesario para el contenedor en marcha, ya que dicha imagen está en uso por algún contenedor.
 
+
+
 ## CONSTRUIR UNA IMAGEN ALTERNATIVA A DOCKERFILE
 
 --------------------------------------------------------------------------

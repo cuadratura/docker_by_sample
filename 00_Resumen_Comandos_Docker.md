@@ -31,7 +31,7 @@
 * Parar contenedor, `docker stop <container-id>` o `docker stop <container-name>`
 * Iniciar Contenedor, `docker start <container-id>` o `docker start <container-name>`
 * Reiniciar Contenedor, `docker restart <container-id>` o `docker restart <container-name>`
-* Borrar todos los contenedore, `docker rm -fv $(docker ps -aq)`
+* Borrar todos los contenedores, `docker rm -fv $(docker ps -aq)`
 * Eliminar contenedor, `docker rm -f <container-name>`
 * Acceder dentro de un contenedor, `docker exec -ti <container-name> bash`
 * Estad´siticas de un contenedor, `docker stats <container-name>`

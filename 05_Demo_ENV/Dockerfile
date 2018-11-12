@@ -3,10 +3,6 @@ FROM centos
 
 # Instalamos apache para centos (S.O.)
 RUN yum install httpd -y
-
-# Copiamos la carpeta en el contenedor
-ADD startbootstrap-freelancer-gh-pages /var/www/html
-
 # ENV <variable-name> <variable-value>
 ENV contenido prueba
 # RUN echo incluye el valor de la variable dentro 

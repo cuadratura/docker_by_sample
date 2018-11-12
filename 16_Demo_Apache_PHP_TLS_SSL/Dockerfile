@@ -2,11 +2,13 @@ FROM centos:7
 
 # Capa de instalación
 RUN \
+    # instalamos apache
     yum -y install \
     httpd \
+    # isntalamos php
     php-cli \
     php-common \
-    # https apache centos
+    # instalamos el https apache centos
     # https://www.techrepublic.com/article/how-to-enable-https-on-apache-centos/
     mod_ssl \
     openssl
@@ -25,5 +27,4 @@ EXPOSE 443
 
 CMD apachectl -DFOREGROUND
 
-# docker build --tag apache:ssl-ok .
-# docker run -d -p 443:443 apache:ssl-ok
+# 
